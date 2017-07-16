@@ -46,6 +46,9 @@ export default class TodoRoute extends Component {
       }
     })
   }
+  add = () => {
+    this.todoStore.addTodo("abc")
+  }
   render() {
     console.log(this.todoStore.todosList, `this.todoStore.todos---------`)
     return (
@@ -53,27 +56,29 @@ export default class TodoRoute extends Component {
         <TodosList store={this.todoStore} />
         <hr/>
         <NewTodoFormUI form={this.newTodoForm}  />
+        <button onClick={this.add}>Add</button>
       </div>
     );
   }
 }
 
-const TodosList = observer(({store}) =>
-  <ul>
-    {_.map(store.todosList, (todo) => <TodoItem 
-      {...todo}
-      key={todo.id}
-      onCompletedStatusToggle={store.toggleTodoStatus}
-      onDelete={store.removeTodo}
-    />)}
+const TodosList = observer(({store}) => {
+  console.log(`todoListCmp---------`)
+  return <ul>
+    {_.map(store.todosList, (todo) => <div key={_.uniqueId('todo-')}>
+      {todo}
+    </div> )}
   </ul>
+}
 ) 
 
 const TodoItem = observer(({id, content, isCompleted, onCompletedStatusToggle, onDelete}) => {
-  return <label>
-    <input type="checkbox" value={isCompleted} onChange={_.partial(onCompletedStatusToggle, id)} />
-    <span>{content} </span>
+  return <div>
+    <label>
+      <input type="checkbox" value={isCompleted} onChange={_.partial(onCompletedStatusToggle, id)} />
+      <span>{content} </span>
+    </label>
     <span onClick={_.partial(onDelete, id)}> X </span>
-  </label>
+  </div>
 })
 
