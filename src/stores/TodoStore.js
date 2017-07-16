@@ -1,36 +1,38 @@
-import { observable, action, computed, extendObservable } from "mobx";
+import { observable, action, computed, extendObservable, map } from "mobx";
 import axios from "axios";
 import _ from 'lodash'
 
 class TodoStore {
-  @observable todos = [];
+
+  constructor() {
+    this.todos = map({})
+  }
 
   @computed get todosList () {
-    return this.todos
+    console.log(Array.from(this.todos.values()), `Array.from(this.todos.values())---------`)
+    return Array.from(this.todos.values())
   }
 
   getTodoById = (id) => {
-    const todo = this.todos[id]
-    if (!this.todo) throw new Error(`no such todo with id ${id}`)
-    return this.todo
+    return this.todos.get(id)
   }
 
   @action addTodo = (content) => {
-    this.todos.push(content)
-    console.log(this.todos, `todos---------`)
+    const id = `${Date.now()}`
+    const todo = observable({
+      id,
+      content,
+      isCompleted: false,
+    })
+    this.todos.set(id, todo)
   }
 
   @action removeTodo =  (id) => {
-    delete this.getTodoById(id)
-  }
-  
-  @action removeAll = (id) => {
-    this.todos = {}
+    this.todos.delete(id)
   }
 
-  @action toggleTodoStatus = (id) => {
-    const todo = this.getTodoById(id)
-    todo.isCompleted = !todo.isCompleted
+  @action removeAll = (id) => {
+    this.todos.clear()
   }
 
   @action filter = (pred) => {
